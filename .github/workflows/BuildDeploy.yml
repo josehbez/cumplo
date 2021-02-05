@@ -26,7 +26,13 @@ jobs:
           host: ${{ secrets.DEPLOY_IP }}
           username: ${{ secrets.DEPLOY_USER }}
           port: ${{ secrets.DEPLOY_PORT }}
-          script: whoami
+          script: |
+            git clone https://github.com/josehbez/cumplo.git
+            docker pull docker.pkg.github.com/josehbez/cumplo/cumplo:latest
+            cd cumplo
+            docker rm webcumplo || true
+            docker-compose up -d
+            
 
 
 
