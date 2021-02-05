@@ -26,7 +26,8 @@ SECRET_KEY = 'q10ck3!!g1%u-$gu2g6zlnzej0iqijp$qh_2n!4bhzql-#w=61'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '0.0.0.0'
+    '0.0.0.0',
+    'josehbez.com'
 ]
 
 
