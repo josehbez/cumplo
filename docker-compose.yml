@@ -3,13 +3,18 @@ version: "3.7"
 services:
   webcumplo:
     container_name: webcumplo
-    build: .
+    image: docker.pkg.github.com/josehbez/cumplo/cumplo:latest
+    #Mode DEV 
+    #build: .
     depends_on:
       - mysql8
     ports:
       - 8333:8000
     networks:
       - mysql8net
+    #Mode DEV
+    #volumes:
+    #  - ./:/opt/django
 
   mysql8:
     container_name: mysql8
