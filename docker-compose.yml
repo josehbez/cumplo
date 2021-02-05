@@ -1,0 +1,40 @@
+version: "3.7"
+
+services:
+  webcumplo:
+    container_name: webcumplo
+    build: .
+    depends_on:
+      - mysql8
+    ports:
+      - 8333:8000
+    networks:
+      - mysql8net
+
+  mysql8:
+    container_name: mysql8
+    image: mysql:8.0
+    #restart: always
+    environment: 
+      MYSQL_ROOT_PASSWORD: passcumplo
+      MYSQL_DATABASE: dbcumplo
+    volumes: 
+      - mysql8store:/var/lib/mysql
+    networks: 
+      - mysql8net
+#    ports: 
+#      - 3306:3306
+#  adminer:
+#    image: adminer
+#    container_name: mysql8admin
+#    #restart: always
+#    ports:
+#      - 8080:8080
+#    networks: 
+#      - mysql8net
+
+volumes: 
+  mysql8store:
+
+networks: 
+  mysql8net:
