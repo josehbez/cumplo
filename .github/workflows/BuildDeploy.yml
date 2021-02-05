@@ -1,0 +1,41 @@
+name: Build and Deploy Website
+
+on: [push]
+
+jobs:
+
+  #build:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #  - uses: actions/checkout@v1
+  #  - name: Build the Docker image
+  #    run: | 
+  #      docker build . --file Dockerfile --tag docker.pkg.github.com/$GITHUB_REPOSITORY/cumplo:latest
+  #      docker login docker.pkg.github.com --username josehbez --password $GH_TOKEN
+  #      docker push docker.pkg.github.com/$GITHUB_REPOSITORY/cumplo:latest
+  #    env:
+  #      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create SSH key
+        run: |
+          SSHPATH="$HOME/.ssh"
+          mkdir -p "$SSHPATH"
+          echo "$DEPLOY_KEY" > "$SSHPATH/key"
+          chmod 600 "$SSHPATH/key"
+          SERVER_DEPLOY="$DEPLOY_USER@$DEPLOY_IP:$DEPLOY_DESTINATION"
+          sh -c "rsync -e -c -r --delete -e 'ssh -i $SSHPATH/key -o StrictHostKeyChecking=no -p $DEPLOY_PORT' $GITHUB_WORKSPACE/$FOLDER/. $SERVER_DEPLOY"
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_IP: ${{ secrets.DEPLOY_IP }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_DESTINATION: ${{ secrets.DEPLOY_DESTINATION }}
+
+
+
+        
+
+
