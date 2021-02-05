@@ -12,9 +12,9 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build the Docker image
       run: | 
-        docker build . --file Dockerfile --tag docker.pkg.github.com/$GITHUB_REPOSITORY:latest
+        docker build . --file Dockerfile --tag docker.pkg.github.com/$GITHUB_REPOSITORY/cumplo:latest
         docker login docker.pkg.github.com --username josehbez --password $GH_TOKEN
-        docker push docker.pkg.github.com/$GITHUB_REPOSITORY:latest
+        docker push docker.pkg.github.com/$GITHUB_REPOSITORY/cumplo:latest
 
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
