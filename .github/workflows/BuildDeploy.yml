@@ -19,7 +19,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Create SSH key
+      - uses: actions/checkout@v1
+      - name: Create SSH key      
         run: |
           SSHPATH="$HOME/.ssh"
           mkdir -p "$SSHPATH"
