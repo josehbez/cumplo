@@ -19,8 +19,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: appleboy/ssh-action@master
       - name: Deploy
+        uses: appleboy/ssh-action@master
         with:
           key: ${{ secrets.DEPLOY_KEY }}
           host: ${{ secrets.DEPLOY_IP }}
