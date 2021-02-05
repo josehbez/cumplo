@@ -19,21 +19,14 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Create SSH key      
-        run: |
-          SSHPATH="$HOME/.ssh"
-          mkdir -p "$SSHPATH"
-          echo "$DEPLOY_KEY" > "$SSHPATH/key"
-          chmod 600 "$SSHPATH/key"
-          SERVER_DEPLOY="$DEPLOY_USER@$DEPLOY_IP:$DEPLOY_DESTINATION"
-          sh -c "rsync -e -c -r --delete -e 'ssh -i $SSHPATH/key -o StrictHostKeyChecking=no -p $DEPLOY_PORT' $GITHUB_WORKSPACE/$FOLDER/. $SERVER_DEPLOY"
-        env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
-          DEPLOY_IP: ${{ secrets.DEPLOY_IP }}
-          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
-          DEPLOY_DESTINATION: ${{ secrets.DEPLOY_DESTINATION }}
+      - uses: appleboy/ssh-action@master
+      - name: Deploy
+        with:
+          key: ${{ secrets.DEPLOY_KEY }}
+          host: ${{ secrets.DEPLOY_IP }}
+          username: ${{ secrets.DEPLOY_USER }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          script: whoami
 
 
 
