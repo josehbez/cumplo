@@ -7,8 +7,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
       - name: Build Image
-        uses: actions/checkout@v1
         run: | 
           docker build . --file Dockerfile --tag docker.pkg.github.com/$GITHUB_REPOSITORY/cumplo:latest
           docker login docker.pkg.github.com --username josehbez --password $GH_TOKEN
