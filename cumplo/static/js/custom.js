@@ -77,7 +77,7 @@
 		$('a[href^="#welcome"]').addClass('active');
 
 		//smoothscroll
-		$('.menu-item').on('click', function (e) {
+		/*$('.menu-item').on('click', function (e) {
 			e.preventDefault();
 			var athis = this;
 			var target = this.hash,
@@ -85,7 +85,7 @@
 			var $target = $(target);
 
 			$('html, body').stop().animate({
-				'scrollTop': $target.offset().top
+				'scrollTop': $target.offset().top()
 			}, 500, 'swing', function () {
 				window.location.hash = target;
 				$('.menu-item').removeClass('active');
@@ -111,7 +111,7 @@
 					currLink.removeClass("active");
 				}
 			});
-		})
+		})*/
 	});
 
 	const Accordion = {

@@ -125,6 +125,9 @@ var config = {
 */
 
     function GetHistorical (){
+        $("#request-container").hide();
+        $("#start-container").show();
+
         var hc = document.getElementById('historical-chart');
         if (hc !== null){
             var ctx = hc.getContext('2d');
@@ -138,10 +141,10 @@ var config = {
                         },
                         options: {
                             responsive: true,
-                            title: {
-                                display: true,
-                                text: 'Histórico'
-                            },
+                            //title: {
+                            //    display: true,
+                            //    text: 'Histórico'
+                            //},
                             tooltips: {
                                 mode: 'index',
                                 intersect: false,
@@ -179,10 +182,25 @@ var config = {
             
             
         }
+
+    }
+    function GetBySerie(path){
+        $("#start-container").hide();
+        $("#request-container").show();    
     }
 
     $(document).ready(function () {
-        GetHistorical();
+        //GetHistorical();
+        GetBySerie("/api/dollar")
+        $('.nav-item').on('click', function (e) {
+            e.preventDefault();
+            if ( this.innerText ===  "INICIO"){
+                GetHistorical();
+            }
+            if ( this.innerText ===  "DOLAR"){
+                GetBySerie("/api/dollar")
+            }
+		});
     });
 
 })(window.jQuery);
