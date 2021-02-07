@@ -3,13 +3,60 @@
 {% block title %} Inicio {% endblock %}
 
 {% block content %}
-    <section class="section" id="testimonials">
-        <div class="container">
-            <div class="row">
-                <div style="width:100%;" >
-                    <canvas id="historical-chart"></canvas>
-                </div>
-            </div>
+<section class="text-center">
+    <div id="start-container" class="container">
+        <canvas id="historical-chart"></canvas>
+    </div>
+
+    <div id="request-container" class="container">
+        <div class="py-5 text-center">
+            <h2 id="rc-title"></h2>
         </div>
-    </section>
+        <div class="row">
+            <div class="col-md-4 order-md-2 mb-4">
+              <h4 class="text-center mb-3">
+                <span class="text-muted">Consultar por fechas</span>                
+              </h4>
+
+              <form class="card p-2">
+                <div class="input-group">
+                  <input id="rc-date-from" type="date" class="form-control">
+                  <input id="rc-date-to" type="date" class="form-control">
+                </div>
+                
+                <button id="rc-button" class="btn btn-primary btn-lg btn-block" type="button">
+                    Consultar
+                </button>
+
+              </form>
+
+              <ul class="list-group mb-3">
+                <li class="list-group-item d-flex justify-content-between bg-light">
+                    <div class="text-success">
+                      <h6 class="my-0">Máximo</h6>
+                    </div>
+                    <span class="text-success">+ <span id="rc-max">0</span></span>
+                  </li>
+                <li class="list-group-item d-flex justify-content-between bg-light">
+                  <div class="text-danger">
+                    <h6 class="my-0">Mínimo</h6>
+                  </div>
+                  <span class="text-danger"> <span id="rc-min">0</span></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Promedio</span>
+                  <strong><span id="rc-avg">0</span></strong>
+                </li>
+              </ul>
+    
+              
+              
+            </div>
+            <div class="col-md-8 order-md-1">
+              
+            </div>
+          </div>
+            
+    </div>
+</section>
 {% endblock %}
