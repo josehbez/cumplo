@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Series(models.Model):
+class Serie(models.Model):
 
     date = models.DateField("Date Publish")
     value = models.FloatField("Value")
