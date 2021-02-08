@@ -11,6 +11,8 @@ COPY . .
 RUN pip install -r requirements.txt
 RUN apk del build-deps
 
+RUN  python cumplo/manage.py collectstatic --noinput
+
 EXPOSE 8000
 ENTRYPOINT ["bash"]
 

@@ -23,12 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'q10ck3!!g1%u-$gu2g6zlnzej0iqijp$qh_2n!4bhzql-#w=61'
 
+#
+BANXICO_TOKEN = "605621c6401fdc5df8f8a4c578d8a8bffc60ed02683824aabe8914f98922d708"
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    '0.0.0.0',
-    'josehbez.com'
+    'cumplo.josehbez.com'
 ]
 
 

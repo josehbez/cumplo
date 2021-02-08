@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 José Hbez. All rights reserved
-
-
+from django.conf import settings
 import requests
 
 # Ref: https://www.banxico.org.mx/SieAPIRest/service/v1/doc/catalogoSeries
@@ -79,7 +78,7 @@ def make_request(serie_id, dt_from, dt_to):
         "https://www.banxico.org.mx/SieAPIRest/service/v1/series/{}/datos/{}/{}".format(serie_id, dt_from, dt_to),
         headers={
             'Accept': 'application/json',
-            'Bmx-Token': '605621c6401fdc5df8f8a4c578d8a8bffc60ed02683824aabe8914f98922d708',
+            'Bmx-Token': settings.BANXICO_TOKEN,
         }
     )
     if resp.status_code != 200:
