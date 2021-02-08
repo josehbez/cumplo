@@ -27,7 +27,7 @@ SECRET_KEY = 'q10ck3!!g1%u-$gu2g6zlnzej0iqijp$qh_2n!4bhzql-#w=61'
 BANXICO_TOKEN = "605621c6401fdc5df8f8a4c578d8a8bffc60ed02683824aabe8914f98922d708"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '0.0.0.0',
