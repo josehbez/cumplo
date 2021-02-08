@@ -6,6 +6,9 @@
     function GetHistorical (){
         $("#request-container").hide();
         $("#start-container").show();
+        
+        $('#start-container canvas:first').remove(); 
+        $('<canvas id="historical-chart"></canvas>' ).appendTo( '#start-container');
 
         var hc = document.getElementById('historical-chart');
         if (hc !== null){
@@ -70,11 +73,17 @@
         if (from === "menu"){
             $("#rc-date-from").val("");
             $("#rc-date-to").val("");
+            $('#rc-content-chart canvas:first').remove(); 
+            $('<canvas id="request-chart"></canvas>' ).appendTo( '#rc-content-chart' );
+
         }
         
     }
+
     function GetBySerie(menu, from){
-        
+
+        menu = String(menu).replace(/\s/g, '');
+
         CleanBySerie(from);
 
         var path = null; 
@@ -213,6 +222,7 @@
             $(".alert").show();
         }
     }
+
     $(document).ready(function () {
         ShowAlert(null)
         GetHistorical();
@@ -229,6 +239,7 @@
             $(athis).addClass('active');
 
         });        
+        
         $('#rc-button').on('click', function (e) {
             e.preventDefault();
             $.each( $('.nav-item'), function( key, value ) {
@@ -238,6 +249,18 @@
             });
         });
         
+        $('#rc-reset').on('click', function (e) {
+            e.preventDefault();
+            CleanBySerie("menu")
+        });
+
+        var getToday= function (){
+            var d = new Date();
+            return d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+        }
+        $("#rc-date-from").attr("max", getToday())
+        $("#rc-date-to").attr("max", getToday())
+
     });
 
 })(window.jQuery);

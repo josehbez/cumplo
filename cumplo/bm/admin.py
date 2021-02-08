@@ -4,4 +4,7 @@ from django.contrib import admin
 
 from .models import Serie
 
-admin.site.register(Serie)
+class SerieAdmin(admin.ModelAdmin):
+    list_display = ('serie', 'date', 'value')
+
+admin.site.register(Serie,SerieAdmin)

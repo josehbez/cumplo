@@ -63,7 +63,7 @@ class API:
         if labels and datasets:
             payload = cls.payload(s=True,p={'labels': labels, 'datasets': datasets})
         else:
-            payload = cls.payload(m='Warning: No hay registros históricos para gráfica')
+            payload = cls.payload(m='Warning: No hay registros históricos para gráficar')
         return JsonResponse(payload)
     
     @classmethod
