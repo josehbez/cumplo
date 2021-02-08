@@ -141,10 +141,10 @@ var config = {
                         },
                         options: {
                             responsive: true,
-                            //title: {
-                            //    display: true,
-                            //    text: 'Histórico'
-                            //},
+                            title: {
+                                display: true,
+                                text: 'Histórico'
+                            },
                             tooltips: {
                                 mode: 'index',
                                 intersect: false,
@@ -184,23 +184,118 @@ var config = {
         }
 
     }
-    function GetBySerie(path){
+    function GetBySerie(menu){
+        var path = null; 
+        var title = null; 
+        if ( menu ===  "DOLAR"){
+            title = "Tipo de Cambio";
+            path = "/api/dollar";            
+        }else if ( menu ===  "UDIS"){
+            title ="Valor de UDIS";
+            path ="/api/udis"
+        }else if ( menu ===  "TIIE"){
+            title ="Tasas de Interés Interbancarias";
+            path ="/api/tiie";
+        }else{
+            return 0 
+        }
+
         $("#start-container").hide();
-        $("#request-container").show();    
+        $("#request-container").show();
+        
+        $("#rc-title").text(title);
+
+        var rc = document.getElementById('request-chart');
+        if (rc !== null){
+            var ctx = rc.getContext('2d');
+            
+            fetch(path,{
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    "X-CSRFToken":$("input[name='csrfmiddlewaretoken']").val(),
+                },
+                method: 'POST', 
+                body: JSON.stringify({
+                    'dt-from': $("#rc-date-from").val(),
+                    'dt-to':$("#rc-date-to").val(),
+                })
+            }).then( response => response.json()).then( data=>{                
+                if (data.success == true){
+                    var rcConfig = {
+                        type: 'line',
+                        data: {
+                            labels: data.payload.labels,
+                            datasets:data.payload.datasets
+                        },
+                        options: {
+                            responsive: true,
+                            //title: {
+                            //    display: true,
+                            //    text: title
+                            //},
+                            tooltips: {
+                                mode: 'index',
+                                intersect: false,
+                            },
+                            hover: {
+                                mode: 'nearest',
+                                intersect: true
+                            },
+                            scales: {
+                                xAxes: [{
+                                    display: true,
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Día'
+                                    }
+                                }],
+                                yAxes: [{
+                                    display: true,
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Valor'
+                                    }
+                                }]
+                            }
+                        }
+                    };
+                    new Chart(ctx, rcConfig);
+                }else{
+                    console.error(data.message)
+                }
+                console.log(data)
+            }).catch((error)=>{
+                console.error( error)
+            });
+
+        }
     }
 
     $(document).ready(function () {
-        //GetHistorical();
-        GetBySerie("/api/dollar")
+        GetHistorical();
         $('.nav-item').on('click', function (e) {
             e.preventDefault();
-            if ( this.innerText ===  "INICIO"){
+            var menu = this.innerText;
+            if (menu ===  "INICIO"){
                 GetHistorical();
+            }else{
+                GetBySerie(menu);
             }
-            if ( this.innerText ===  "DOLAR"){
-                GetBySerie("/api/dollar")
-            }
-		});
+            $('.nav-item').removeClass('active');
+            var athis = this;
+            $(athis).addClass('active');
+
+        });        
+        $('#rc-button').on('click', function (e) {
+            e.preventDefault();
+            $.each( $('.nav-item'), function( key, value ) {
+                if ($(value).hasClass('active')){
+                    GetBySerie(value.innerText);
+                }
+            });
+        });
+        
     });
 
 })(window.jQuery);
