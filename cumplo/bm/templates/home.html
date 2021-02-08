@@ -14,21 +14,24 @@
         </div>
         <div class="row">
             <div class="col-md-4 order-md-2 mb-4">
-              <h4 class="text-center mb-3">
+              <h5 class="text-center mb-3">
                 <span class="text-muted">Consultar por fechas</span>                
-              </h4>
+              </h5>
 
               <form class="card p-2">
+                {% csrf_token %}
+
                 <div class="input-group">
                   <input id="rc-date-from" type="date" class="form-control">
                   <input id="rc-date-to" type="date" class="form-control">
                 </div>
-                
-                <button id="rc-button" class="btn btn-primary btn-lg btn-block" type="button">
-                    Consultar
-                </button>
-
+                <div class="clearfix"></div>
+                <div class="input-group">
+                  <input id="rc-button" class="btn btn-primary btn-lg btn-block" type="button" value="Consultar"/>
+                  <input class="btn btn-lg btn-block" type='reset' value='Limpiar'/>
+                </div>
               </form>
+              <br/>
 
               <ul class="list-group mb-3">
                 <li class="list-group-item d-flex justify-content-between bg-light">
@@ -41,19 +44,16 @@
                   <div class="text-danger">
                     <h6 class="my-0">Mínimo</h6>
                   </div>
-                  <span class="text-danger"> <span id="rc-min">0</span></span>
+                  <span class="text-danger">- <span id="rc-min">0</span></span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between">
                   <span>Promedio</span>
                   <strong><span id="rc-avg">0</span></strong>
                 </li>
               </ul>
-    
-              
-              
             </div>
             <div class="col-md-8 order-md-1">
-              
+              <canvas id="request-chart"></canvas>
             </div>
           </div>
             

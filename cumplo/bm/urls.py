@@ -5,12 +5,10 @@ from django.urls import path , include
 from . import views
 from . import api
 
-urlpatterns = [
-    
+urlpatterns = [    
     path('',views.HomePageView.as_view(), name='Home'),
-    path('api/historical', api.API.Historical, name='Home'),
-    path('api/dollar',  views.HomePageView.as_view(), name='Home'),
-    path('api/udis',  views.HomePageView.as_view(), name='Home'),
-    path('api/tiie',  views.HomePageView.as_view(), name='Home'),
-    
+    path('api/historical', api.API.Historical),
+    path('api/dollar',  api.API.Dollar,),
+    path('api/udis',  api.API.Udis, ),
+    path('api/tiie',  api.API.Tiie, ),    
 ]

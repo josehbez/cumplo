@@ -1,36 +1,33 @@
+import json
 from django.http import JsonResponse, request
 from .models import Serie
-from .libbm import serie_property, SERIES_ID
-
+from .libbm import serie_property, SERIES_ID, SERIE_DOLLAR, make_request, SERIE_UDIS, SERIE_TIIE
+from datetime import datetime
 
 class API: 
     
-
-    mfilter = lambda s: Serie.objects.values_list('date','value').filter(serie=s).order_by('-date')
+    mfilter = lambda **f: Serie.objects.values_list('date','value').filter(**f).order_by('-date')
     mlabels = lambda o: [ i[0] for i in o]
 
     @classmethod
-    def Historical(cls, request):
+    def build_payload(cls, series_id, filter_model=None):
         labels = []
         series = {}
-
-        for serie_id in SERIES_ID: 
-            serie = cls.mfilter(serie_id)
+        for serie_id in series_id: 
+            if filter_model:
+                serie = cls.mfilter(serie=serie_id, **filter_model)
+            else:
+                serie = cls.mfilter(serie=serie_id)
             series.update({serie_id: serie})
             labels += cls.mlabels(serie)
     
         labels = list(set(labels))        
         labels.sort()
         
-        payload ={
-            'success': False,
-            'message': 'Error a obtner la informacion', 
-            'payload': None
-        }
 
-        if len(labels)>0:
-            datasets = []
-            for serie_id in SERIES_ID:
+        datasets = []
+        if len(labels)>0:            
+            for serie_id in series_id:
                 serie = series.get(serie_id)
                 
                 data = []
@@ -51,13 +48,85 @@ class API:
                         'fill': False
                     }
                 )
-            payload.update({
-             'success': True, 
-             'payload': {
-                    'labels': labels,
-                    'datasets':datasets
-                }
-            })        
+                  
+        return len(labels) and labels or None,  len(datasets) and datasets or None
+        
+    payload =  lambda s=None, m =None, p=None: {'success': s or False,'message': m or "Error al obtener los registros",'payload': p or None}
 
+    @classmethod
+    def Historical(cls, request):
+        labels, datasets = cls.build_payload(SERIES_ID)
+        payload = cls.payload()
+        if labels and datasets:
+            payload = cls.payload(s=True,p={'labels': labels, 'datasets': datasets})
+        else:
+            payload = cls.payload(m='Error: Al obtener los datos de la db para construir la gráfica')
         return JsonResponse(payload)
     
+    @classmethod
+    def make_request_banxico(cls, series_id, request):
+        payload = cls.payload()
+        try:
+            if request.method != 'POST':
+                raise Exception("Fatal: Solo peticiones POST permitidas")
+            
+            data = json.loads(request.body)
+
+            dt_from = data.get('dt-from')# or datetime.now()
+            dt_to = data.get('dt-to') # or datetime.now()
+            if not dt_from or not dt_to:
+                raise Exception("Error: Los parametros dt-from:YYYY-mm-dd y dt-to:YYYY-mm-dd son requeridos.")
+            
+            dt_from = datetime.strptime(dt_from,"%Y-%m-%d").strftime("%Y-%m-%d")
+            dt_to = datetime.strptime(dt_to,"%Y-%m-%d").strftime("%Y-%m-%d")
+
+            if dt_from > dt_to:
+                raise Exception("Warning: Fecha de inicio debe ser menor a la final.")
+            
+            resp = make_request(series_id, dt_from, dt_to)
+
+            if isinstance(series_id, str):
+                series_id = [series_id]
+        
+            for serie_id in series_id:
+                series = cls.mfilter(serie=serie_id)                
+                rows = resp.get(serie_id)
+                if not rows:
+                    continue
+                for row in rows:
+                    rowDate = datetime.strptime(row.get('fecha'), "%d/%m/%Y")
+                    rowValue = float(row.get('dato'))
+                    try: 
+                        rowExist = series.get(date=rowDate.strftime("%Y-%m-%d"))                        
+                        dateExist = rowExist[0]
+                        valueExist = rowExist[1]
+                        if valueExist != rowValue:
+                            Serie.objects.filter(serie=serie_id,date=dateExist, value=valueExist).update(
+                                value=rowValue
+                            )                            
+                    except Serie.DoesNotExist as e:                        
+                        Serie(
+                            date=rowDate,
+                            value=rowValue,
+                            serie=serie_id
+                        ).save()            
+            labels, datasets = cls.build_payload(series_id=series_id, filter_model={'date__gte':dt_from,'date__lte': dt_to})
+            if labels and datasets:
+                payload = cls.payload(s=True,p={'labels': labels, 'datasets': datasets})
+            else:
+                raise Exception("Error: Al obtener los datos de la db para construir la gráfica")
+        except Exception as e:
+            payload = cls.payload(m=str(e))        
+        return JsonResponse(payload)
+
+    @classmethod
+    def Dollar(cls, request):
+        return cls.make_request_banxico(SERIE_DOLLAR, request)
+    
+    @classmethod
+    def Udis(cls, request):
+        return cls.make_request_banxico(SERIE_UDIS, request)
+    
+    @classmethod
+    def Tiie(cls, request):
+        return cls.make_request_banxico(SERIE_TIIE, request)
