@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2021 José Hbez 
+
 import json
 from django.http import JsonResponse, request
 from .models import Serie
@@ -60,7 +63,7 @@ class API:
         if labels and datasets:
             payload = cls.payload(s=True,p={'labels': labels, 'datasets': datasets})
         else:
-            payload = cls.payload(m='Error: Al obtener los datos de la db para construir la gráfica')
+            payload = cls.payload(m='Warning: No hay registros históricos para gráfica')
         return JsonResponse(payload)
     
     @classmethod
@@ -71,14 +74,14 @@ class API:
                 raise Exception("Fatal: Solo peticiones POST permitidas")
             
             data = json.loads(request.body)
-
-            dt_from = data.get('dt-from')# or datetime.now()
-            dt_to = data.get('dt-to') # or datetime.now()
+            DATE_FORMAT="%Y-%m-%d"
+            dt_from = data.get('dt-from') #or datetime.now().strftime(DATE_FORMAT)
+            dt_to = data.get('dt-to') #or datetime.now().strftime(DATE_FORMAT)
             if not dt_from or not dt_to:
                 raise Exception("Error: Los parametros dt-from:YYYY-mm-dd y dt-to:YYYY-mm-dd son requeridos.")
             
-            dt_from = datetime.strptime(dt_from,"%Y-%m-%d").strftime("%Y-%m-%d")
-            dt_to = datetime.strptime(dt_to,"%Y-%m-%d").strftime("%Y-%m-%d")
+            dt_from = datetime.strptime(dt_from,DATE_FORMAT).strftime(DATE_FORMAT)
+            dt_to = datetime.strptime(dt_to,DATE_FORMAT).strftime(DATE_FORMAT)
 
             if dt_from > dt_to:
                 raise Exception("Warning: Fecha de inicio debe ser menor a la final.")
@@ -97,7 +100,7 @@ class API:
                     rowDate = datetime.strptime(row.get('fecha'), "%d/%m/%Y")
                     rowValue = float(row.get('dato'))
                     try: 
-                        rowExist = series.get(date=rowDate.strftime("%Y-%m-%d"))                        
+                        rowExist = series.get(date=rowDate.strftime(DATE_FORMAT))                        
                         dateExist = rowExist[0]
                         valueExist = rowExist[1]
                         if valueExist != rowValue:

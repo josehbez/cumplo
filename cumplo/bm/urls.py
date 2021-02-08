@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2021 José Hbez. All rights reserved
+
 from bm import api
 from bm.api import API
 from django.urls import path , include

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) Jose Hbez. All rights reserved.
+# Copyright (c) 2021 José Hbez. All rights reserved
+
 
 import requests
 

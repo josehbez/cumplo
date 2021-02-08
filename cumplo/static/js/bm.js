@@ -1,128 +1,7 @@
+/**
+ * Copyright (c) 2021 José Hbez. All rights reserved 
+ */
 (function ($) {
-/*
-var randomScalingFactor = function() {
-    return  Math.floor(Math.random() * Math.floor(50));
-};
-chartColors = {
-	red: 'rgb(255, 99, 132)',
-	orange: 'rgb(255, 159, 64)',
-	yellow: 'rgb(255, 205, 86)',
-	green: 'rgb(75, 192, 192)',
-	blue: 'rgb(54, 162, 235)',
-	purple: 'rgb(153, 102, 255)',
-	grey: 'rgb(201, 203, 207)'
-};
-
-var config = {
-    type: 'line',
-    data: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [{
-            label: 'DOLAR',
-            fill: false,
-            backgroundColor: chartColors.blue,
-            borderColor: chartColors.blue,
-            data: [
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor()
-            ],
-        }, {
-            label: 'UDIS',
-            fill: false,
-            backgroundColor: chartColors.green,
-            borderColor: chartColors.green,
-            borderDash: [5, 5],
-            data: [
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor()
-            ],
-        }, {
-            label: 'TIIE 28',
-            backgroundColor: chartColors.red,
-            borderColor: chartColors.red,
-            data: [
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor()
-            ],
-            fill: false,
-        },{
-            label: 'TIIE 91',
-            backgroundColor: chartColors.red,
-            borderColor: chartColors.red,
-            data: [
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor()
-            ],
-            fill: false,
-        },{
-            label: 'TIIE 28',
-            backgroundColor: chartColors.red,
-            borderColor: chartColors.red,
-            data: [
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor(),
-                randomScalingFactor()
-            ],
-            fill: false,
-        }]
-    },
-    options: {
-        responsive: true,
-        title: {
-            display: true,
-            text: 'Histórico'
-        },
-        tooltips: {
-            mode: 'index',
-            intersect: false,
-        },
-        hover: {
-            mode: 'nearest',
-            intersect: true
-        },
-        scales: {
-            xAxes: [{
-                display: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Día'
-                }
-            }],
-            yAxes: [{
-                display: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Valor'
-                }
-            }]
-        }
-    }
-};
-*/
 
     function GetHistorical (){
         $("#request-container").hide();
@@ -172,21 +51,38 @@ var config = {
                         }
                     };
                     new Chart(ctx, hcConfig);
+                    ShowAlert(null)
                 }else{
-                    console.error("Error:", data.message)
+                    ShowAlert(data.message);
                 }
-                console.log(data)
             }).catch((error)=>{
-                console.error("Error:", error)
+                console.error(error)
             });
-            
-            
         }
-
     }
-    function GetBySerie(menu){
+
+    function CleanBySerie( from ){
+        $("#rc-min-max-avg").hide();
+        $("#rc-min").text(0)
+        $("#rc-max").text(0)
+        $("#rc-avg").text(0)
+
+        if (from === "menu"){
+            $("#rc-date-from").val("");
+            $("#rc-date-to").val("");
+        }
+        
+    }
+    function GetBySerie(menu, from){
+        
+        CleanBySerie(from);
+
         var path = null; 
         var title = null; 
+        var showMinMaxAvg = true;
+        
+        
+
         if ( menu ===  "DOLAR"){
             title = "Tipo de Cambio";
             path = "/api/dollar";            
@@ -196,18 +92,40 @@ var config = {
         }else if ( menu ===  "TIIE"){
             title ="Tasas de Interés Interbancarias";
             path ="/api/tiie";
+            showMinMaxAvg = false;
+
         }else{
             return 0 
+        }
+        
+        var getMinMaxAvg = function(arr) {
+            var max = arr[0];
+            var min = arr[0];
+            var sum = arr[0]; 
+            for (var i = 1; i < arr.length; i++) {
+                if (arr[i] > max) {
+                    max = arr[i];
+                }
+                if (arr[i] < min) {
+                    min = arr[i];
+                }
+                sum = sum + arr[i];
+            }
+            return [ min, max, sum/arr.length]; 
         }
 
         $("#start-container").hide();
         $("#request-container").show();
-        
+        $("#rc-content-chart").hide();        
+    
         $("#rc-title").text(title);
 
         var rc = document.getElementById('request-chart');
+
         if (rc !== null){
+
             var ctx = rc.getContext('2d');
+            ctx.clearRect(0, 0, rc.width, rc.height);
             
             fetch(path,{
                 headers: {
@@ -221,7 +139,21 @@ var config = {
                     'dt-to':$("#rc-date-to").val(),
                 })
             }).then( response => response.json()).then( data=>{                
+                
                 if (data.success == true){
+                    
+                    $("#rc-content-chart").show();
+
+                    if (showMinMaxAvg){
+                        if (data.payload.datasets.length>0){
+                            $("#rc-min-max-avg").show();
+                            var valMinMaxAvg = getMinMaxAvg(data.payload.datasets[0].data)
+                            var decPart = (valMinMaxAvg[0]+"").split(".")[1];
+                            $("#rc-min").text(valMinMaxAvg[0])
+                            $("#rc-max").text(valMinMaxAvg[1])
+                            $("#rc-avg").text(valMinMaxAvg[2].toFixed(decPart.length))
+                        }
+                    }
                     var rcConfig = {
                         type: 'line',
                         data: {
@@ -260,11 +192,12 @@ var config = {
                             }
                         }
                     };
+                    
                     new Chart(ctx, rcConfig);
+                    ShowAlert(null)
                 }else{
-                    console.error(data.message)
+                    ShowAlert(data.message)
                 }
-                console.log(data)
             }).catch((error)=>{
                 console.error( error)
             });
@@ -272,7 +205,16 @@ var config = {
         }
     }
 
+    function ShowAlert(msg){
+        if (msg === null){
+            $(".alert").hide();
+        }else{
+            $("#alert-message").text(msg);
+            $(".alert").show();
+        }
+    }
     $(document).ready(function () {
+        ShowAlert(null)
         GetHistorical();
         $('.nav-item').on('click', function (e) {
             e.preventDefault();
@@ -280,7 +222,7 @@ var config = {
             if (menu ===  "INICIO"){
                 GetHistorical();
             }else{
-                GetBySerie(menu);
+                GetBySerie(menu, "menu");
             }
             $('.nav-item').removeClass('active');
             var athis = this;
@@ -291,7 +233,7 @@ var config = {
             e.preventDefault();
             $.each( $('.nav-item'), function( key, value ) {
                 if ($(value).hasClass('active')){
-                    GetBySerie(value.innerText);
+                    GetBySerie(value.innerText,"button");
                 }
             });
         });
