@@ -31,10 +31,4 @@ jobs:
             docker-compose stop
             docker rm webcumplo || true
             docker-compose up -d
-            
-
-
-
-        
-
-
+            docker container  exec -it -u 0  webcumplo python cumplo/manage.py migrate
