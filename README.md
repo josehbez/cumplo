@@ -1,6 +1,8 @@
-# Cumplo Web on DJango
-
+<p align="center">
+  <img src="cumplo/static/images/home-preview.png">
+</p>
 <p align="center">    
+
   <a href="LICENSE">
     <img src="https://img.shields.io/github/license/josehbez/cumplo?style=flat-square" />
   </a>
@@ -9,11 +11,6 @@
   </a>
 </p>
 
-## Try
+# Website on DJango
 
-👉 [https://josehbez.com/cumplo](https://josehbez.com/cumplo)
-
-## Docs
-
-👉 [https://github.com/josehbez/cumplo/wiki](https://github.com/josehbez/cumplo/wiki)
-
+## Docs 👉 [https://github.com/josehbez/cumplo/wiki](https://github.com/josehbez/cumplo/wiki)
