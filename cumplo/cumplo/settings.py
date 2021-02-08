@@ -30,6 +30,7 @@ BANXICO_TOKEN = "605621c6401fdc5df8f8a4c578d8a8bffc60ed02683824aabe8914f98922d70
 DEBUG = False
 
 ALLOWED_HOSTS = [
+    '0.0.0.0',
     'cumplo.josehbez.com'
 ]
 
